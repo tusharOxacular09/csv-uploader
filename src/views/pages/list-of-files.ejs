@@ -1,0 +1,66 @@
+<section>
+  <div class="files-container">
+    <h1>List of Uploaded Files</h1>
+    <% if (!files || !files.length) { %>
+    <p>No Files Uploaded Yet!</p>
+    <% } else { %>
+    <table>
+      <thead>
+        <tr>
+          <th>Sl. No</th>
+          <th>Filename</th>
+          <th>Date of Creation</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% files.forEach((file, index) => { %>
+        <tr>
+          <td><%= index + 1 %></td>
+          <td>
+            <a href="/file-details/<%= file.fileName %>"
+              ><%= file.fileName %></a
+            >
+          </td>
+          <td><%= new Date(file.createdAt).toLocaleString() %></td>
+        </tr>
+        <% }) %>
+      </tbody>
+    </table>
+    <% } %>
+  </div>
+  <style>
+    .files-container {
+      padding: 20px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #f4f4f4;
+    }
+
+    tr:hover {
+      background-color: #f1f1f1;
+      cursor: pointer;
+    }
+
+    a {
+      text-decoration: none;
+      color: #007bff;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</section>

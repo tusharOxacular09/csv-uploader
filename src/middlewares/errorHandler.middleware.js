@@ -14,7 +14,7 @@ export const errorHandlerMiddleware = (err, req, res, next) => {
   }
 
   // logging the error in console
-  console.log(err);
+  console.log(err.message);
 
   return res.status(500).json({
     success: false,
