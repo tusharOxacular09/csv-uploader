@@ -1,5 +1,6 @@
 import { fileModel } from "../models/files.model.js";
 import { CustomErrorHandler } from "../middlewares/errorHandler.middleware.js";
+import { parsedFileData } from "../middlewares/parsedFileData.middleware.js";
 
 // Upload CSV File Page
 export const uploadFilesPage = (req, res, next) => {
@@ -28,9 +29,17 @@ export const listFilesPage = async (req, res, next) => {
 // View File Details
 export const viewFileDetails = async (req, res, next) => {
   try {
+    // 1. Getting File Name Frm Request Parameter
+    const fileName = req.params.fileName;
+
+    // Parsing The File Data
+    const fileDetails = await parsedFileData(fileName);
+
     const fileData = {
-      fileName: req.params.fileName,
+      fileName,
+      fileDetails,
     };
+    
     return res.render("layout", { view: "pages/file-details", fileData });
   } catch (error) {
     next(error);

@@ -1,4 +1,244 @@
 <section>
-    File Details
-    Name: <%= fileData?.fileName %>
+  <div class="file-details-container">
+    <h1>File Details: <%= fileData.fileName %></h1>
+    <input type="text" id="searchBox" placeholder="Search By <%= Object.keys(fileData.fileDetails[0])[0] %> ..." />
+    <button id="searchButton">Search</button>
+    <button id="resetButton">Reset</button>
+    <table id="fileDetailsTable">
+      <thead>
+        <tr id="tableHeader"></tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div class="pagination-controls">
+      <button id="prevPage" disabled>Previous</button>
+      <span id="pageInfo"></span>
+      <button id="nextPage">Next</button>
+      <label for="rowsPerPage">Rows per page:</label>
+      <select id="rowsPerPage">
+        <option value="5">5</option>
+        <option value="10">10</option>
+        <option value="20">20</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+      </select>
+    </div>
+    <div
+      id="mydiv"
+      data-alldata="<%= JSON.stringify(fileData.fileDetails) %>"
+    ></div>
+  </div>
+
+  <script>
+    // Safely embedding the JSON data
+    const allData = document.getElementById("mydiv").dataset.alldata;
+    const fileDetails = allData ? JSON.parse(allData) : [];
+    const tableHeader = document.getElementById("tableHeader");
+    const tableBody = document.getElementById("tableBody");
+    const rowsPerPageSelect = document.getElementById("rowsPerPage");
+    const prevPageButton = document.getElementById("prevPage");
+    const nextPageButton = document.getElementById("nextPage");
+    const pageInfo = document.getElementById("pageInfo");
+    const searchBox = document.getElementById("searchBox");
+    const searchButton = document.getElementById("searchButton");
+    const resetButton = document.getElementById("resetButton");
+
+    let currentPage = 1;
+    let rowsPerPage = parseInt(rowsPerPageSelect.value);
+    let filteredData = fileDetails;
+
+    rowsPerPageSelect.addEventListener("change", (e) => {
+      rowsPerPage = parseInt(e.target.value);
+      currentPage = 1;
+      displayTable();
+    });
+
+    prevPageButton.addEventListener("click", () => {
+      if (currentPage > 1) {
+        currentPage--;
+        displayTable();
+      }
+    });
+
+    nextPageButton.addEventListener("click", () => {
+      if (currentPage * rowsPerPage < filteredData.length) {
+        currentPage++;
+        displayTable();
+      }
+    });
+
+    searchButton.addEventListener("click", () => {
+      const query = searchBox.value.toLowerCase();
+      currentPage = 1;
+      const firstColumn = Object.keys(fileDetails[0])[0];
+      filteredData = fileDetails.filter((row) =>
+        row[firstColumn].toLowerCase().includes(query)
+      );
+      displayTable();
+    });
+
+    resetButton.addEventListener("click", () => {
+      searchBox.value = "";
+      filteredData = fileDetails;
+      currentPage = 1;
+      displayTable();
+    });
+
+    function displayTable() {
+      tableBody.innerHTML = "";
+      tableHeader.innerHTML = "";
+
+      if (filteredData.length === 0) return;
+
+      const headers = Object.keys(filteredData[0]);
+      headers.forEach((header) => {
+        const th = document.createElement("th");
+        th.innerText = header;
+        tableHeader.appendChild(th);
+      });
+
+      const startIndex = (currentPage - 1) * rowsPerPage;
+      const endIndex = Math.min(startIndex + rowsPerPage, filteredData.length);
+
+      for (let i = startIndex; i < endIndex; i++) {
+        const row = document.createElement("tr");
+        headers.forEach((header) => {
+          const cell = document.createElement("td");
+          cell.innerText = filteredData[i][header];
+          row.appendChild(cell);
+        });
+        tableBody.appendChild(row);
+      }
+
+      pageInfo.innerText = `Page ${currentPage} of ${Math.ceil(
+        filteredData.length / rowsPerPage
+      )}`;
+
+      prevPageButton.disabled = currentPage === 1;
+      nextPageButton.disabled =
+        currentPage * rowsPerPage >= filteredData.length;
+    }
+
+    displayTable();
+  </script>
+
+  <style>
+    .file-details-container {
+      padding: 20px;
+      max-width: fit-content;
+      margin: 0 auto;
+      background-color: #f9f9f9;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    input#searchBox {
+      width: calc(100% - 150px);
+      padding: 10px;
+      margin-bottom: 20px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+    }
+
+    button#searchButton,
+    button#resetButton {
+      padding: 10px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      margin-left: 10px;
+      box-sizing: border-box;
+    }
+
+    button#searchButton {
+      background-color: #28a745;
+      color: white;
+    }
+
+    button#searchButton:hover {
+      background-color: #218838;
+    }
+
+    button#resetButton {
+      background-color: #dc3545;
+      color: white;
+    }
+
+    button#resetButton:hover {
+      background-color: #c82333;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+
+    th,
+    td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #007bff;
+      color: white;
+      text-transform: uppercase;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tr:hover {
+      background-color: #e9ecef;
+    }
+
+    .pagination-controls {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      background-color: #f1f1f1;
+      border-radius: 8px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .pagination-controls button {
+      margin-right: 10px;
+      padding: 10px 15px;
+      cursor: pointer;
+      border: none;
+      border-radius: 4px;
+      background-color: #007bff;
+      color: white;
+      font-size: 14px;
+    }
+
+    .pagination-controls button:disabled {
+      background-color: #d6d6d6;
+      cursor: not-allowed;
+    }
+
+    .pagination-controls select {
+      margin-left: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .pagination-controls span {
+      font-size: 14px;
+      color: #333;
+    }
+  </style>
 </section>
