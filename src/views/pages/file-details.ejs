@@ -1,7 +1,11 @@
 <section>
   <div class="file-details-container">
     <h1>File Details: <%= fileData.fileName %></h1>
-    <input type="text" id="searchBox" placeholder="Search By <%= Object.keys(fileData.fileDetails[0])[0] %> ..." />
+    <input
+      type="text"
+      id="searchBox"
+      placeholder="Search By <%= Object.keys(fileData.fileDetails[0])[0] %> ..."
+    />
     <button id="searchButton">Search</button>
     <button id="resetButton">Reset</button>
     <table id="fileDetailsTable">
